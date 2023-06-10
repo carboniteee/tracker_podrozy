@@ -56,7 +56,7 @@ class Mapa : AppCompatActivity() {
     }
 
     private fun addMarkers(startPoint: GeoPoint, endPoint: GeoPoint, intermediatePoints: ArrayList<GeoPoint>) {
-        val markerIcon = getDrawable(R.drawable.baseline_square_24) // Pobranie ikony kwadratu
+        val markerIcon = getDrawable(R.drawable.point) // Pobranie ikony kwadratu
         val color = Color.parseColor("#0eacef") // Kolor ikony
 
         // Dodanie markera dla startPoint
