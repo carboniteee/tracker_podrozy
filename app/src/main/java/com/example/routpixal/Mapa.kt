@@ -6,17 +6,13 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.example.routpixal.R
-import org.osmdroid.api.IMapController
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
-import org.osmdroid.views.overlay.Polyline
 import java.util.ArrayList
 import org.osmdroid.bonuspack.routing.*
-import org.osmdroid.bonuspack.routing.RoadManager.*
 import android.content.Intent
 import android.graphics.drawable.Drawable
 
@@ -38,44 +34,35 @@ class Mapa : AppCompatActivity() {
         val startPoint = GeoPoint(52.51541145744718, 13.397866774345298)
         mapController.setCenter(startPoint)
 
-        // Przykładowe wywołanie funkcji createRoute
-        val endPoint = GeoPoint(52.51536943714169, 13.397170965767296) // Przykładowy punkt końcowy
+        val endPoint = GeoPoint(52.51536943714169, 13.397170965767296)
         val intermediatePoints = ArrayList<GeoPoint>()
-        intermediatePoints.add(GeoPoint(52.5072974705042, 13.39791073882347)) // Przykładowe punkty pośrednie
+        intermediatePoints.add(GeoPoint(52.5072974705042, 13.39791073882347))
         intermediatePoints.add(GeoPoint(52.50652557133142, 13.386127210857268))
         intermediatePoints.add(GeoPoint(52.51392238088504, 13.38221698184606))
         createRoute(startPoint, endPoint, intermediatePoints)
         addMarkers(startPoint, endPoint, intermediatePoints)
 
         lateinit var markerIcon: Drawable
-        markerIcon = getDrawable(R.drawable.point)!! // Pobranie ikony kwadratu
+        markerIcon = getDrawable(R.drawable.point)!!
 
-        // Dodanie markera dla startPoint
         val startMarker = Marker(map)
         startMarker.position = startPoint
         startMarker.icon = markerIcon
         startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
-        startMarker.infoWindow = null // Wyłączenie informacji na temat markera
+        startMarker.infoWindow = null
         startMarker.setOnMarkerClickListener { marker, mapView ->
-            // Obsługa zdarzenia kliknięcia na markerze startowym
-            // Tutaj możesz umieścić kod, który ma zostać wykonany po kliknięciu
-            // Na przykład otwarcie ekranu pamiatki.xml
             val intent = Intent(this, Pamiatki::class.java)
             startActivity(intent)
-            true // Zwróć true, aby oznaczyć kliknięcie jako obsłużone
+            true
         }
 
-        // Dodanie markera dla endPoint
         val endMarker = Marker(map)
         endMarker.position = endPoint
         endMarker.icon = markerIcon
         endMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
         endMarker.infoWindow = null
         endMarker.setOnMarkerClickListener { marker, mapView ->
-            // Obsługa zdarzenia kliknięcia na markerze końcowym
-            // Tutaj możesz umieścić kod, który ma zostać wykonany po kliknięciu
-            // Na przykład otwarcie okna dialogowego lub wykonanie innej akcji
-            true // Zwróć true, aby oznaczyć kliknięcie jako obsłużone
+            true
         }
 
         markerOverlay = Marker(map)
@@ -86,20 +73,15 @@ class Mapa : AppCompatActivity() {
         map.overlays.add(startMarker)
         map.overlays.add(endMarker)
 
-        // Dodanie obsługi kliknięcia dla wszystkich markerów
         for (overlay in map.overlays) {
             if (overlay is Marker) {
                 overlay.setOnMarkerClickListener { marker, mapView ->
-                    // Obsługa zdarzenia kliknięcia na dowolnym markerze
-                    // Tutaj możesz umieścić kod, który ma zostać wykonany po kliknięciu
-                    // Na przykład przekierowanie do strony pamiątki
                     val intent = Intent(this, Pamiatki::class.java)
                     startActivity(intent)
-                    true // Zwróć true, aby oznaczyć kliknięcie jako obsłużone
+                    true
                 }
             }
         }
-
         map.invalidate()
     }
 
@@ -113,17 +95,15 @@ class Mapa : AppCompatActivity() {
     }
 
     private fun addMarkers(startPoint: GeoPoint, endPoint: GeoPoint, intermediatePoints: ArrayList<GeoPoint>) {
-        val markerIcon = getDrawable(R.drawable.point) // Pobranie ikony kwadratu
-        val color = Color.parseColor("#0eacef") // Kolor ikony
+        val markerIcon = getDrawable(R.drawable.point)
+        val color = Color.parseColor("#0eacef")
 
-        // Dodanie markera dla startPoint
         val startMarker = Marker(map)
         startMarker.position = startPoint
         startMarker.icon = markerIcon
         startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
-        startMarker.infoWindow = null // Wyłączenie informacji na temat markera
+        startMarker.infoWindow = null
 
-        // Dodanie markerów dla intermediatePoints
         for (point in intermediatePoints) {
             val intermediateMarker = Marker(map)
             intermediateMarker.position = point
@@ -133,7 +113,6 @@ class Mapa : AppCompatActivity() {
             map.overlays.add(intermediateMarker)
         }
 
-        // Dodanie markera dla endPoint
         val endMarker = Marker(map)
         endMarker.position = endPoint
         endMarker.icon = markerIcon
@@ -148,24 +127,17 @@ class Mapa : AppCompatActivity() {
         map.overlays.add(startMarker)
         map.overlays.add(endMarker)
 
-        // Dodanie obsługi kliknięcia dla wszystkich markerów
         for (overlay in map.overlays) {
             if (overlay is Marker) {
                 overlay.setOnMarkerClickListener { marker, mapView ->
-                    // Obsługa zdarzenia kliknięcia na dowolnym markerze
-                    // Tutaj możesz umieścić kod, który ma zostać wykonany po kliknięciu
-                    // Na przykład przekierowanie do strony pamiątki
                     val intent = Intent(this, Pamiatki::class.java)
                     startActivity(intent)
-                    true // Zwróć true, aby oznaczyć kliknięcie jako obsłużone
+                    true
                 }
             }
         }
-
         map.invalidate()
     }
-
-    // Reszta kodu bez zmian
 
     private inner class RoutingTask : AsyncTask<GeoPoint, Void, Road>() {
         override fun doInBackground(vararg params: GeoPoint): Road? {
@@ -180,12 +152,11 @@ class Mapa : AppCompatActivity() {
         override fun onPostExecute(result: Road?) {
             if (result != null) {
                 val color = Color.parseColor("#0eacef")
-                val roadOverlay = RoadManager.buildRoadOverlay(result, color, 20f) // Ustawienie koloru i grubości linii
-                map.overlays.add(0, roadOverlay) // Dodanie warstwy trasy na początek listy warstw
-
+                val roadOverlay = RoadManager.buildRoadOverlay(result, color, 20f)
+                map.overlays.add(0, roadOverlay)
                 map.invalidate()
             } else {
-                // Obsługa błędu, gdy nie można wyznaczyć trasy
+                // co gdy nie można wyznaczyć trasy
             }
         }
     }

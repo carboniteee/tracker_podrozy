@@ -17,7 +17,8 @@ class Start : AppCompatActivity() {
         val btnLista = findViewById<Button>(R.id.btnLista)
 
         btnDodajPodroz.setOnClickListener {
-            //Dodaj podróż
+            val intent = Intent(this, Dodaj::class.java)
+            startActivity(intent)
         }
 
         btnMapy.setOnClickListener {

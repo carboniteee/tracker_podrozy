@@ -1,0 +1,34 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/editTextStart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Punkt początkowy" />
+
+    <LinearLayout
+        android:id="@+id/pointsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+    <EditText
+        android:id="@+id/editTextEnd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Punkt końcowy"
+        android:minHeight="48dp" />
+
+    <Button
+        android:id="@+id/buttonAddPoint"
+        android:layout_width="72dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/green"
+        android:contentDescription="Usuń"
+        android:drawableEnd="@drawable/dodaj_pkt"
+        android:onClick="removePoint" />
+
+</LinearLayout>
