@@ -12,7 +12,6 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
 import java.util.ArrayList
 import org.osmdroid.bonuspack.routing.*
@@ -68,39 +67,6 @@ class Mapa : AppCompatActivity() {
                 val color = Color.parseColor("#0eacef")
                 val roadOverlay = RoadManager.buildRoadOverlay(result, color, 20f) // Ustawienie koloru i grubości linii
                 map.overlays.add(roadOverlay)
-
-                val startPointMarker = Marker(map)
-                startPointMarker.position = result.mNodes[0].mLocation
-                startPointMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                startPointMarker.title = "Punkt początkowy"
-                startPointMarker.showInfoWindow()
-                map.overlays.add(startPointMarker)
-
-                val endPointMarker = Marker(map)
-                endPointMarker.position = result.mNodes[result.mNodes.size - 1].mLocation
-                endPointMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                endPointMarker.title = "Punkt końcowy"
-                endPointMarker.showInfoWindow()
-                map.overlays.add(endPointMarker)
-
-                val maxIntermediatePoints = 3
-                for (i in 1 until result.mNodes.size - 1) {
-                    val node = result.mNodes[i]
-                    if (!node.mInstructions.isNullOrEmpty()) {
-                        val marker = Marker(map)
-                        marker.position = node.mLocation
-                        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                        marker.title = "Punkt pośredni"
-                        marker.showInfoWindow()
-                        map.overlays.add(marker)
-
-                        // Dodaj warunek sprawdzający ilość dodanych markerów pośrednich
-                        if (map.overlays.size - 2 > maxIntermediatePoints) {
-                            map.overlays.removeAt(map.overlays.size - 3)
-                        }
-                    }
-                }
-
 
                 map.invalidate()
             } else {
