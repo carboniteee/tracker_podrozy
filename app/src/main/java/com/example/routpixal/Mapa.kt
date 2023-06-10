@@ -1,4 +1,5 @@
 package com.example.routpixal
+
 import android.graphics.Color
 import android.os.AsyncTask
 import android.os.Bundle
@@ -16,7 +17,6 @@ import org.osmdroid.views.overlay.Polyline
 import java.util.ArrayList
 import org.osmdroid.bonuspack.routing.*
 import org.osmdroid.bonuspack.routing.RoadManager.*
-import android.graphics.Paint
 
 class Mapa : AppCompatActivity() {
     private val REQUEST_PERMISSIONS_REQUEST_CODE = 1
@@ -32,26 +32,33 @@ class Mapa : AppCompatActivity() {
         map.setTileSource(TileSourceFactory.MAPNIK)
         val mapController = map.controller
         mapController.setZoom(18.5)
-        val startPoint = GeoPoint(50.29489671148186, 18.93392417602203)
+        val startPoint = GeoPoint(52.51541145744718, 13.397866774345298)
         mapController.setCenter(startPoint)
 
         // Przykładowe wywołanie funkcji createRoute
-        val endPoint = GeoPoint(51.234567, 19.345678) // Przykładowy punkt końcowy
-        createRoute(startPoint, endPoint)
+        val endPoint = GeoPoint(52.51536943714169, 13.397170965767296) // Przykładowy punkt końcowy
+        val intermediatePoints = ArrayList<GeoPoint>()
+        intermediatePoints.add(GeoPoint(52.5072974705042, 13.39791073882347)) // Przykładowe punkty pośrednie
+        intermediatePoints.add(GeoPoint(52.50652557133142, 13.386127210857268))
+        intermediatePoints.add(GeoPoint(52.51392238088504, 13.38221698184606))
+        createRoute(startPoint, endPoint, intermediatePoints)
     }
 
-    private fun createRoute(startPoint: GeoPoint, endPoint: GeoPoint) {
+    private fun createRoute(startPoint: GeoPoint, endPoint: GeoPoint, intermediatePoints: ArrayList<GeoPoint>) {
         val routingTask = RoutingTask()
-        routingTask.execute(startPoint, endPoint)
+        val points = ArrayList<GeoPoint>()
+        points.add(startPoint)
+        points.addAll(intermediatePoints)
+        points.add(endPoint)
+        routingTask.execute(*points.toTypedArray())
     }
 
     private inner class RoutingTask : AsyncTask<GeoPoint, Void, Road>() {
         override fun doInBackground(vararg params: GeoPoint): Road? {
-            val startPoint = params[0]
-            val endPoint = params[1]
+            val points = params.toList()
 
             val roadManager: RoadManager = OSRMRoadManager(applicationContext, "userAgent")
-            val road: Road = roadManager.getRoad(arrayListOf(startPoint, endPoint))
+            val road: Road = roadManager.getRoad(points as ArrayList<GeoPoint>?)
 
             return if (road.mStatus == Road.STATUS_OK) road else null
         }
@@ -75,6 +82,25 @@ class Mapa : AppCompatActivity() {
                 endPointMarker.title = "Punkt końcowy"
                 endPointMarker.showInfoWindow()
                 map.overlays.add(endPointMarker)
+
+                val maxIntermediatePoints = 3
+                for (i in 1 until result.mNodes.size - 1) {
+                    val node = result.mNodes[i]
+                    if (!node.mInstructions.isNullOrEmpty()) {
+                        val marker = Marker(map)
+                        marker.position = node.mLocation
+                        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                        marker.title = "Punkt pośredni"
+                        marker.showInfoWindow()
+                        map.overlays.add(marker)
+
+                        // Dodaj warunek sprawdzający ilość dodanych markerów pośrednich
+                        if (map.overlays.size - 2 > maxIntermediatePoints) {
+                            map.overlays.removeAt(map.overlays.size - 3)
+                        }
+                    }
+                }
+
 
                 map.invalidate()
             } else {
