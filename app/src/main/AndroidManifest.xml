@@ -25,6 +25,7 @@
         </activity>
         <activity android:name=".Mapa" />
         <activity android:name=".Lista" />
+        <activity android:name=".Pamiatki" />
     </application>
 
 </manifest>

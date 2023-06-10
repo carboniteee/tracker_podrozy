@@ -17,6 +17,8 @@ import org.osmdroid.views.overlay.Polyline
 import java.util.ArrayList
 import org.osmdroid.bonuspack.routing.*
 import org.osmdroid.bonuspack.routing.RoadManager.*
+import android.content.Intent
+import android.graphics.drawable.Drawable
 
 class Mapa : AppCompatActivity() {
     private val REQUEST_PERMISSIONS_REQUEST_CODE = 1
@@ -44,6 +46,61 @@ class Mapa : AppCompatActivity() {
         intermediatePoints.add(GeoPoint(52.51392238088504, 13.38221698184606))
         createRoute(startPoint, endPoint, intermediatePoints)
         addMarkers(startPoint, endPoint, intermediatePoints)
+
+        lateinit var markerIcon: Drawable
+        markerIcon = getDrawable(R.drawable.point)!! // Pobranie ikony kwadratu
+
+        // Dodanie markera dla startPoint
+        val startMarker = Marker(map)
+        startMarker.position = startPoint
+        startMarker.icon = markerIcon
+        startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+        startMarker.infoWindow = null // Wyłączenie informacji na temat markera
+        startMarker.setOnMarkerClickListener { marker, mapView ->
+            // Obsługa zdarzenia kliknięcia na markerze startowym
+            // Tutaj możesz umieścić kod, który ma zostać wykonany po kliknięciu
+            // Na przykład otwarcie ekranu pamiatki.xml
+            val intent = Intent(this, Pamiatki::class.java)
+            startActivity(intent)
+            true // Zwróć true, aby oznaczyć kliknięcie jako obsłużone
+        }
+
+        // Dodanie markera dla endPoint
+        val endMarker = Marker(map)
+        endMarker.position = endPoint
+        endMarker.icon = markerIcon
+        endMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+        endMarker.infoWindow = null
+        endMarker.setOnMarkerClickListener { marker, mapView ->
+            // Obsługa zdarzenia kliknięcia na markerze końcowym
+            // Tutaj możesz umieścić kod, który ma zostać wykonany po kliknięciu
+            // Na przykład otwarcie okna dialogowego lub wykonanie innej akcji
+            true // Zwróć true, aby oznaczyć kliknięcie jako obsłużone
+        }
+
+        markerOverlay = Marker(map)
+        markerOverlay.icon = markerIcon
+        markerOverlay.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+
+        map.overlays.add(markerOverlay)
+        map.overlays.add(startMarker)
+        map.overlays.add(endMarker)
+
+        // Dodanie obsługi kliknięcia dla wszystkich markerów
+        for (overlay in map.overlays) {
+            if (overlay is Marker) {
+                overlay.setOnMarkerClickListener { marker, mapView ->
+                    // Obsługa zdarzenia kliknięcia na dowolnym markerze
+                    // Tutaj możesz umieścić kod, który ma zostać wykonany po kliknięciu
+                    // Na przykład przekierowanie do strony pamiątki
+                    val intent = Intent(this, Pamiatki::class.java)
+                    startActivity(intent)
+                    true // Zwróć true, aby oznaczyć kliknięcie jako obsłużone
+                }
+            }
+        }
+
+        map.invalidate()
     }
 
     private fun createRoute(startPoint: GeoPoint, endPoint: GeoPoint, intermediatePoints: ArrayList<GeoPoint>) {
@@ -91,8 +148,24 @@ class Mapa : AppCompatActivity() {
         map.overlays.add(startMarker)
         map.overlays.add(endMarker)
 
+        // Dodanie obsługi kliknięcia dla wszystkich markerów
+        for (overlay in map.overlays) {
+            if (overlay is Marker) {
+                overlay.setOnMarkerClickListener { marker, mapView ->
+                    // Obsługa zdarzenia kliknięcia na dowolnym markerze
+                    // Tutaj możesz umieścić kod, który ma zostać wykonany po kliknięciu
+                    // Na przykład przekierowanie do strony pamiątki
+                    val intent = Intent(this, Pamiatki::class.java)
+                    startActivity(intent)
+                    true // Zwróć true, aby oznaczyć kliknięcie jako obsłużone
+                }
+            }
+        }
+
         map.invalidate()
     }
+
+    // Reszta kodu bez zmian
 
     private inner class RoutingTask : AsyncTask<GeoPoint, Void, Road>() {
         override fun doInBackground(vararg params: GeoPoint): Road? {
