@@ -12,6 +12,7 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
 import java.util.ArrayList
 import org.osmdroid.bonuspack.routing.*
@@ -20,6 +21,7 @@ import org.osmdroid.bonuspack.routing.RoadManager.*
 class Mapa : AppCompatActivity() {
     private val REQUEST_PERMISSIONS_REQUEST_CODE = 1
     private lateinit var map: MapView
+    private lateinit var markerOverlay: Marker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +43,7 @@ class Mapa : AppCompatActivity() {
         intermediatePoints.add(GeoPoint(52.50652557133142, 13.386127210857268))
         intermediatePoints.add(GeoPoint(52.51392238088504, 13.38221698184606))
         createRoute(startPoint, endPoint, intermediatePoints)
+        addMarkers(startPoint, endPoint, intermediatePoints)
     }
 
     private fun createRoute(startPoint: GeoPoint, endPoint: GeoPoint, intermediatePoints: ArrayList<GeoPoint>) {
@@ -50,6 +53,45 @@ class Mapa : AppCompatActivity() {
         points.addAll(intermediatePoints)
         points.add(endPoint)
         routingTask.execute(*points.toTypedArray())
+    }
+
+    private fun addMarkers(startPoint: GeoPoint, endPoint: GeoPoint, intermediatePoints: ArrayList<GeoPoint>) {
+        val markerIcon = getDrawable(R.drawable.baseline_square_24) // Pobranie ikony kwadratu
+        val color = Color.parseColor("#0eacef") // Kolor ikony
+
+        // Dodanie markera dla startPoint
+        val startMarker = Marker(map)
+        startMarker.position = startPoint
+        startMarker.icon = markerIcon
+        startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+        startMarker.infoWindow = null // Wyłączenie informacji na temat markera
+
+        // Dodanie markerów dla intermediatePoints
+        for (point in intermediatePoints) {
+            val intermediateMarker = Marker(map)
+            intermediateMarker.position = point
+            intermediateMarker.icon = markerIcon
+            intermediateMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+            intermediateMarker.infoWindow = null
+            map.overlays.add(intermediateMarker)
+        }
+
+        // Dodanie markera dla endPoint
+        val endMarker = Marker(map)
+        endMarker.position = endPoint
+        endMarker.icon = markerIcon
+        endMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+        endMarker.infoWindow = null
+
+        markerOverlay = Marker(map)
+        markerOverlay.icon = markerIcon
+        markerOverlay.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+
+        map.overlays.add(markerOverlay)
+        map.overlays.add(startMarker)
+        map.overlays.add(endMarker)
+
+        map.invalidate()
     }
 
     private inner class RoutingTask : AsyncTask<GeoPoint, Void, Road>() {
@@ -66,7 +108,7 @@ class Mapa : AppCompatActivity() {
             if (result != null) {
                 val color = Color.parseColor("#0eacef")
                 val roadOverlay = RoadManager.buildRoadOverlay(result, color, 20f) // Ustawienie koloru i grubości linii
-                map.overlays.add(roadOverlay)
+                map.overlays.add(0, roadOverlay) // Dodanie warstwy trasy na początek listy warstw
 
                 map.invalidate()
             } else {
