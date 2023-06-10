@@ -42,32 +42,21 @@ class Mapa : AppCompatActivity() {
         createRoute(startPoint, endPoint, intermediatePoints)
         addMarkers(startPoint, endPoint, intermediatePoints)
 
-        lateinit var markerIcon: Drawable
-        markerIcon = getDrawable(R.drawable.point)!!
+        val markerIcon: Drawable = getDrawable(R.drawable.point)!!
 
-        val startMarker = Marker(map)
-        startMarker.position = startPoint
-        startMarker.icon = markerIcon
-        startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
-        startMarker.infoWindow = null
+        val startMarker = createMarker(startPoint, markerIcon)
         startMarker.setOnMarkerClickListener { marker, mapView ->
             val intent = Intent(this, Pamiatki::class.java)
             startActivity(intent)
             true
         }
 
-        val endMarker = Marker(map)
-        endMarker.position = endPoint
-        endMarker.icon = markerIcon
-        endMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
-        endMarker.infoWindow = null
+        val endMarker = createMarker(endPoint, markerIcon)
         endMarker.setOnMarkerClickListener { marker, mapView ->
             true
         }
 
-        markerOverlay = Marker(map)
-        markerOverlay.icon = markerIcon
-        markerOverlay.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+        markerOverlay = createMarkerOverlay(markerIcon)
 
         map.overlays.add(markerOverlay)
         map.overlays.add(startMarker)
@@ -85,6 +74,22 @@ class Mapa : AppCompatActivity() {
         map.invalidate()
     }
 
+    private fun createMarker(point: GeoPoint, markerIcon: Drawable?): Marker {
+        val marker = Marker(map)
+        marker.position = point
+        marker.icon = markerIcon
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+        marker.infoWindow = null
+        return marker
+    }
+
+    private fun createMarkerOverlay(markerIcon: Drawable?): Marker {
+        val markerOverlay = Marker(map)
+        markerOverlay.icon = markerIcon
+        markerOverlay.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+        return markerOverlay
+    }
+
     private fun createRoute(startPoint: GeoPoint, endPoint: GeoPoint, intermediatePoints: ArrayList<GeoPoint>) {
         val routingTask = RoutingTask()
         val points = ArrayList<GeoPoint>()
@@ -98,30 +103,15 @@ class Mapa : AppCompatActivity() {
         val markerIcon = getDrawable(R.drawable.point)
         val color = Color.parseColor("#0eacef")
 
-        val startMarker = Marker(map)
-        startMarker.position = startPoint
-        startMarker.icon = markerIcon
-        startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
-        startMarker.infoWindow = null
+        val startMarker = createMarker(startPoint, markerIcon)
+        val endMarker = createMarker(endPoint, markerIcon)
 
         for (point in intermediatePoints) {
-            val intermediateMarker = Marker(map)
-            intermediateMarker.position = point
-            intermediateMarker.icon = markerIcon
-            intermediateMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
-            intermediateMarker.infoWindow = null
+            val intermediateMarker = createMarker(point, markerIcon)
             map.overlays.add(intermediateMarker)
         }
 
-        val endMarker = Marker(map)
-        endMarker.position = endPoint
-        endMarker.icon = markerIcon
-        endMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
-        endMarker.infoWindow = null
-
-        markerOverlay = Marker(map)
-        markerOverlay.icon = markerIcon
-        markerOverlay.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+        markerOverlay = createMarkerOverlay(markerIcon)
 
         map.overlays.add(markerOverlay)
         map.overlays.add(startMarker)
