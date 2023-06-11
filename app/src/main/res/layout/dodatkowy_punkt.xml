@@ -20,7 +20,4 @@
         android:drawableEnd="@drawable/usun_pkt"
         android:onClick="removePoint" />
 
-
-
-
 </LinearLayout>
