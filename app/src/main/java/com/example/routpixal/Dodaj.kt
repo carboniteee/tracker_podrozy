@@ -7,13 +7,15 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.RatingBar
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 class Dodaj : AppCompatActivity() {
     private lateinit var pointsContainer: LinearLayout
     private lateinit var btnAddPoint: Button
     private lateinit var edRouteName: EditText
     private lateinit var ratingBar: RatingBar
-
+    private lateinit var myRef: DatabaseReference
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dodaj)
@@ -36,9 +38,9 @@ class Dodaj : AppCompatActivity() {
             val startPoint = findViewById<EditText>(R.id.edStart).text.toString()
             allPoints.add(startPoint)
 
-            for (i in 0 until pointsContainer.childCount - 1) {
+            for (i in 0 until pointsContainer.childCount) {
                 val pointLayout = pointsContainer.getChildAt(i) as LinearLayout
-                val editTextPoint = pointLayout.findViewById<EditText>(R.id.pointsContainer)
+                val editTextPoint = pointLayout.findViewById<EditText>(R.id.editTextPoint)//pointsContainer)
                 val point = editTextPoint.text.toString()
                 allPoints.add(point)
             }
@@ -47,7 +49,29 @@ class Dodaj : AppCompatActivity() {
             allPoints.add(endPoint)
 
             // teraz te dane można wpisać do bazy danych
+            val newPodroz = Podroz("punkt", routeName, rating, allPoints)
+            // Inicjalizacja bazy danych Firebase
+            val database: FirebaseDatabase = FirebaseDatabase.getInstance()
+            myRef = database.getReference("wiadomosci")
+
+            // Przykład zapisu do bazy danych
+
+            saveMessage(newPodroz)
+
         }
+    }
+
+    private fun saveMessage(message: Podroz) {
+        val newRef = myRef.push()
+        newRef.setValue(message)
+            .addOnSuccessListener {
+                // Zapis pomyślny
+                println("Zapisano wiadomość w bazie danych")
+            }
+            .addOnFailureListener { e ->
+                // Wystąpił błąd podczas zapisu
+                println("Błąd podczas zapisu wiadomości: $e")
+            }
     }
 
     private fun addIntermediatePointField() {

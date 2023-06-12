@@ -1,5 +1,6 @@
 package com.example.routpixal
 
+import android.content.Context
 import android.graphics.Color
 import android.os.AsyncTask
 import android.os.Bundle
@@ -15,6 +16,10 @@ import java.util.ArrayList
 import org.osmdroid.bonuspack.routing.*
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.location.Geocoder
+import com.google.firebase.database.*
+import java.io.IOException
+
 
 class Mapa : AppCompatActivity() {
     private val REQUEST_PERMISSIONS_REQUEST_CODE = 1
@@ -27,6 +32,9 @@ class Mapa : AppCompatActivity() {
         Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
         setContentView(R.layout.mapa)
 
+        ///////////////
+        readLastEntryFromDatabase()
+        /////////////////
         map = findViewById(R.id.mapView)
         map.setTileSource(TileSourceFactory.MAPNIK)
         val mapController = map.controller
@@ -72,6 +80,53 @@ class Mapa : AppCompatActivity() {
             }
         }
         map.invalidate()
+    }
+    fun geocodeLocation(context: Context, locationName: String): Pair<Double, Double>? {
+        val geocoder = Geocoder(context)
+
+        try {
+            val addresses = geocoder.getFromLocationName(locationName, 1)
+            if (addresses != null) {
+                if (addresses.isNotEmpty()) {
+                    val address = addresses[0]
+                    val latitude = address.latitude
+                    val longitude = address.longitude
+                    return Pair(latitude, longitude)
+                }
+            }
+        } catch (e: IOException) {
+
+        }
+        return null
+    }
+
+    fun readLastEntryFromDatabase(callback: (MutableList<String>?) -> Unit) {
+        val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("wiadomosci")
+
+        val query: Query = databaseReference.orderByChild("id").limitToLast(1)
+
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (childSnapshot in dataSnapshot.children) {
+                    val podroz: Podroz? = childSnapshot.getValue(Podroz::class.java)
+                    // Przetwarzaj odczytane dane
+                    if (podroz != null) {
+                        // Odczytaj ostatni wpis
+                        println("Ostatni wpis: ${podroz.allPoints}")
+                        callback(podroz.allPoints)
+                    } else {
+                        println("Nie ma danych")
+                        callback(null)
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Obsłuż błąd odczytu
+                println("Błąd odczytu danych: ${databaseError.message}")
+                callback(null)
+            }
+        })
     }
 
     private fun createMarker(point: GeoPoint, markerIcon: Drawable?): Marker {
