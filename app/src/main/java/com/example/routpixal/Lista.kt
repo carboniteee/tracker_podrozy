@@ -8,7 +8,6 @@ import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.database.*
 
-
 class Lista : AppCompatActivity() {
     private lateinit var listView: ListView
     private lateinit var adapter: ArrayAdapter<String>

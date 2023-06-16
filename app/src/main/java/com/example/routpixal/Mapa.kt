@@ -32,9 +32,9 @@ class Mapa : AppCompatActivity() {
         Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
         setContentView(R.layout.mapa)
 
-        ///////////////
+        /*
         readLastEntryFromDatabase()
-        /////////////////
+        */
         map = findViewById(R.id.mapView)
         map.setTileSource(TileSourceFactory.MAPNIK)
         val mapController = map.controller
@@ -141,7 +141,7 @@ class Mapa : AppCompatActivity() {
     private fun createMarkerOverlay(markerIcon: Drawable?): Marker {
         val markerOverlay = Marker(map)
         markerOverlay.icon = markerIcon
-        markerOverlay.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+        markerOverlay.setAnchor(Marker.ANCHOR_BOTTOM, Marker.ANCHOR_BOTTOM)
         return markerOverlay
     }
 
@@ -154,6 +154,8 @@ class Mapa : AppCompatActivity() {
         routingTask.execute(*points.toTypedArray())
     }
 
+    private val markerInfoMap: MutableMap<Marker, MarkerInfo> = mutableMapOf()
+
     private fun addMarkers(startPoint: GeoPoint, endPoint: GeoPoint, intermediatePoints: ArrayList<GeoPoint>) {
         val markerIcon = getDrawable(R.drawable.point)
         val color = Color.parseColor("#0eacef")
@@ -161,8 +163,13 @@ class Mapa : AppCompatActivity() {
         val startMarker = createMarker(startPoint, markerIcon)
         val endMarker = createMarker(endPoint, markerIcon)
 
+        // Dodaj informacje o markerach do mapy
+        markerInfoMap[startMarker] = MarkerInfo()
+        markerInfoMap[endMarker] = MarkerInfo()
+
         for (point in intermediatePoints) {
             val intermediateMarker = createMarker(point, markerIcon)
+            markerInfoMap[intermediateMarker] = MarkerInfo()
             map.overlays.add(intermediateMarker)
         }
 
@@ -175,7 +182,10 @@ class Mapa : AppCompatActivity() {
         for (overlay in map.overlays) {
             if (overlay is Marker) {
                 overlay.setOnMarkerClickListener { marker, mapView ->
+                    val markerInfo = markerInfoMap[marker]
+                    // Przekaż markerInfo do aktywności Pamiatki i obsłuż go tam
                     val intent = Intent(this, Pamiatki::class.java)
+                    intent.putExtra("markerInfo", markerInfo)
                     startActivity(intent)
                     true
                 }
@@ -183,6 +193,7 @@ class Mapa : AppCompatActivity() {
         }
         map.invalidate()
     }
+
 
     private inner class RoutingTask : AsyncTask<GeoPoint, Void, Road>() {
         override fun doInBackground(vararg params: GeoPoint): Road? {
