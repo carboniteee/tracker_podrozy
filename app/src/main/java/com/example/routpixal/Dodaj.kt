@@ -20,6 +20,7 @@ class Dodaj : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dodaj)
         pointsContainer = findViewById(R.id.pointsContainer)
+
         btnAddPoint = findViewById(R.id.btnAddPoint)
         edRouteName = findViewById(R.id.edRouteName)
         ratingBar = findViewById(R.id.ratingBar)

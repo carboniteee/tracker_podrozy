@@ -30,7 +30,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Punkt początkowy"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:autofillHints="52.51541145744718, 13.397866774345298"
+            android:importantForAutofill="yes" />
 
         <LinearLayout
             android:id="@+id/pointsContainer"
@@ -43,7 +45,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Punkt końcowy"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:autofillHints="52.51536943714169, 13.397170965767296"
+            android:importantForAutofill="yes"/>
 
         <Button
             android:id="@+id/btnAddPoint"
@@ -53,6 +57,15 @@
             android:contentDescription="Usuń"
             android:drawableEnd="@drawable/dodaj_pkt"
             android:onClick="removePoint" />
+
+        <EditText
+            android:id="@+id/edDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text"
+            android:minHeight="48dp"
+            android:text="Opis" />
 
         <RatingBar
             android:id="@+id/ratingBar"
